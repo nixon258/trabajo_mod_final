@@ -1,0 +1,217 @@
+{UTF-8}
+********************************************************
+	.Modelo FARC 1998-2004
+********************************************************
+Modelo de ciclos de violencia: atentados mensuales de las FARC, 1998-2004.
+Equivale al modelo implementado en modelo_farc.py (misma estructura y parametros).
+Generado como texto Vensim; abrir con Vensim PLE y ejecutar con Simulate.
+
+********************************************************
+	.Control
+********************************************************
+		Simulation Control Parameters
+	|
+FINAL TIME  = 84
+	~	Month
+	~	Horizonte: enero de 1998 a diciembre de 2004 (84 pasos).
+	|
+INITIAL TIME  = 0
+	~	Month
+	~	Mes inicial de la simulacion.
+	|
+TIME STEP  = 1
+	~	Month
+	~	Paso mensual, igual a la unidad de los datos.
+	|
+SAVEPER  = TIME STEP
+	~	Month
+	~	Frecuencia de guardado de resultados.
+	|
+********************************************************
+	.Parametros
+********************************************************
+		Parametros calibrados y de escenario
+	|
+escala oportunidad= 100000
+	~	Dmnl
+	~	Escala de la oportunidad de atentar cuando la severidad es nula.
+	|
+k severidad= 34.5
+	~	Dmnl
+	~	Sensibilidad de la oportunidad a la severidad estatal. Escenario de mayor severidad: 54.
+	|
+umbral severidad= 0.28
+	~	Dmnl
+	~	Severidad a partir de la cual la oportunidad de atentar se reduce.
+	|
+retardo severidad= 4
+	~	Month
+	~	Meses que tarda el Estado en ajustar su respuesta al miedo.
+	|
+dano por atentado= 0.09
+	~	Dmnl
+	~	Aporte de cada atentado al miedo de la poblacion.
+	|
+olvido del miedo= 0.38
+	~	Dmnl
+	~	Proporcion mensual del miedo que se olvida.
+	|
+comandos por miembro= 0.3
+	~	Dmnl
+	~	Comandos disponibles por miembro activo.
+	|
+material por comando= 10
+	~	Dmnl
+	~	Unidades de material necesarias por comando operativo.
+	|
+uso material por atentado= 3
+	~	Dmnl
+	~	Material consumido en cada atentado.
+	|
+techo de acopio= 250
+	~	Dmnl
+	~	Capacidad maxima de almacenamiento de material.
+	|
+recaudo potencial= 100
+	~	Dmnl
+	~	Recaudo mensual maximo. Escenario de financiacion reducida: 40.
+	|
+gasto material mensual= 8
+	~	Dmnl
+	~	Gasto mensual destinado a comprar material.
+	|
+sostenimiento por miembro= 0.25
+	~	Dmnl
+	~	Costo mensual de sostener un miembro activo.
+	|
+reclutamiento por miembro= 0.01
+	~	Dmnl
+	~	Reclutas nuevos por miembro activo y por mes.
+	|
+bajas por miembro= 0.002
+	~	Dmnl
+	~	Bajas mensuales por miembro activo.
+	|
+********************************************************
+	.Niveles
+********************************************************
+		Estados del sistema
+	|
+Miedo= INTEG(Entrada miedo-Salida miedo, 0.65)
+	~	Dmnl
+	~	Miedo de la poblacion, entre 0 y 1. 1 representa panico.
+	|
+Severidad= INTEG((Miedo-Severidad)/retardo severidad, 0.65)
+	~	Dmnl
+	~	Severidad de la respuesta contraterrorista del Estado, sigue al miedo con retardo.
+	|
+Recursos economicos= INTEG(Recaudo-Gasto sostenimiento-Gasto material, 200)
+	~	Dmnl
+	~	Fondos disponibles de la organizacion.
+	|
+Recursos humanos= INTEG(Entrenamiento-Bajas, 150)
+	~	Person
+	~	Miembros activos de la organizacion.
+	|
+Recursos materiales= INTEG(Compras+Irregulares-Uso material-Depreciacion, 200)
+	~	Dmnl
+	~	Armamento y equipo disponibles.
+	|
+Reclutas= INTEG(Reclutamiento-Entrenamiento, 8)
+	~	Person
+	~	Miembros en entrenamiento.
+	|
+********************************************************
+	.Flujos del miedo
+********************************************************
+		Retroalimentacion entre dano y miedo
+	|
+Entrada miedo= MIN(1-EXP(-dano por atentado*Atentados), 1-Miedo)
+	~	Dmnl/Month
+	~	Flujo de entrada al miedo, creciente y concavo respecto al dano.
+	|
+Salida miedo= olvido del miedo*Miedo
+	~	Dmnl/Month
+	~	Olvido mensual del miedo.
+	|
+********************************************************
+	.Atentados
+********************************************************
+		Oportunidad, capacidad y ejecucion
+	|
+mu oportunidad= escala oportunidad*EXP(-k severidad*(Severidad-umbral severidad))
+	~	Dmnl
+	~	Media de la distribucion de Poisson de la oportunidad de atentar.
+	|
+Oportunidad de atentar= RANDOM POISSON(mu oportunidad, 0, 200, 1)
+	~	Dmnl
+	~	Numero de oportunidades que el lider valora en el mes.
+	|
+Comandos= comandos por miembro*Recursos humanos
+	~	Dmnl
+	~	Comandos totales, operativos y de apoyo.
+	|
+Capacidad operativa= MIN(0.75*Comandos, MIN(Recursos materiales, techo de acopio)/material por comando)
+	~	Dmnl
+	~	Maximo de atentados que la organizacion puede ejecutar en el mes.
+	|
+Atentados= MIN(Capacidad operativa, Oportunidad de atentar)
+	~	Dmnl
+	~	Atentados ejecutados en el mes: el minimo entre capacidad y oportunidad.
+	|
+********************************************************
+	.Recursos
+********************************************************
+		Flujos economicos, materiales y humanos
+	|
+Recaudo= recaudo potencial*(0.3+Miedo)
+	~	Dmnl/Month
+	~	Extorsion, rescates y otras rentas, proporcionales al miedo.
+	|
+Gasto sostenimiento= sostenimiento por miembro*Recursos humanos
+	~	Dmnl/Month
+	~	Costo de mantener a los miembros activos.
+	|
+Gasto material= MIN(gasto material mensual, MAX(0, Recursos economicos))
+	~	Dmnl/Month
+	~	Compra mensual de material, limitada por los fondos disponibles.
+	|
+Compras= 0.8*Gasto material
+	~	Dmnl/Month
+	~	Material adquirido con el gasto mensual.
+	|
+Irregulares= MAX(0, RANDOM NORMAL(0, 12, 4, 2, 2))
+	~	Dmnl/Month
+	~	Adquisiciones irregulares sin costo monetario, media 4 y desviacion 2.
+	|
+Uso material= uso material por atentado*Atentados
+	~	Dmnl/Month
+	~	Material consumido en los atentados del mes.
+	|
+Depreciacion= 0.01*Recursos materiales
+	~	Dmnl/Month
+	~	Perdida mensual de material por deterioro.
+	|
+Reclutamiento= reclutamiento por miembro*Recursos humanos
+	~	Person/Month
+	~	Nuevos reclutas captados en el mes.
+	|
+Entrenamiento= Reclutas
+	~	Person/Month
+	~	Reclutas que terminan entrenamiento y pasan a miembros activos.
+	|
+Bajas= bajas por miembro*Recursos humanos
+	~	Person/Month
+	~	Miembros que salen de la organizacion.
+	|
+********************************************************
+	.Simulacion
+********************************************************
+		Instrucciones
+	|
+		~	1. Abrir en Vensim PLE.
+		~	2. Model > Settings: verificar FINAL TIME 84 y TIME STEP 1.
+		~	3. Simulate: la corrida usa semilla 1 para la oportunidad y semilla 2 para los irregulares.
+		~	4. Escenarios: k severidad = 54; recaudo potencial = 40.
+		~	5. Para replicas multiples usar Sensitivity (requiere Vensim DSS).
+		|

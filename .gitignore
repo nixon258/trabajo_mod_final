@@ -1,0 +1,12 @@
+# Bloqueos de LibreOffice / Office
+.~lock.*#
+~$*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Sistema
+.DS_Store
+Thumbs.db

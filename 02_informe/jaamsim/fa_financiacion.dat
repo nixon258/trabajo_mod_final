@@ -1,0 +1,2 @@
+Scenario	Replication	[Atentados].NumberAdded		[Espera].QueueLengthAverage		[Material].UnitsInUseAverage		[ComandoOperativo].UnitsInUseAverage	
+1	1	183.0		0.0		0.06535714285714286		0.06535714285714286	

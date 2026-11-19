@@ -1,0 +1,111 @@
+Simulation	SoftwareName	JaamSim	-
+Simulation	SoftwareVersion	2026-08	-
+Simulation	ConfigurationFile	/home/juanb/Documents/modelacion/jaamsim/fa_financiacion.cfg	-
+Simulation	ScenarioNumber	1.0	-
+Simulation	ScenarioIndex	{1}	-
+Simulation	ReplicationNumber	1.0	-
+Simulation	RunNumber	1.0	-
+Simulation	RunIndex	{1}	-
+Simulation	PresentTimeAndDate	Nov 17, 2026 19:33	-
+Simulation	PresentSimulationTime	84.0	d
+Simulation	RunDuration	84.0	d
+Simulation	InitializationDuration	0.0	d
+
+*** EntityGenerator ***
+
+Oportunidades	StateTimes[Breakdown]	0.0	d
+Oportunidades	StateTimes[Idle]	0.2700340412847222	d
+Oportunidades	StateTimes[Maintenance]	0.0	d
+Oportunidades	StateTimes[Stopped]	0.0	d
+Oportunidades	StateTimes[Working]	83.72996595871527	d
+Oportunidades	TotalTime	84.0	d
+Oportunidades	Utilisation	0.9967853090323247	-
+Oportunidades	Commitment	0.9967853090323248	-
+Oportunidades	Availability	1.0	-
+Oportunidades	Reliability	1.0	-
+Oportunidades	NumberAdded	183.0	-
+Oportunidades	NumberProcessed	183.0	-
+
+*** EntityProcessor ***
+
+ComandoOperativo	StateTimes[Breakdown]	0.0	d
+ComandoOperativo	StateTimes[Idle]	78.80227883158564	d
+ComandoOperativo	StateTimes[Maintenance]	0.0	d
+ComandoOperativo	StateTimes[Stopped]	0.0	d
+ComandoOperativo	StateTimes[Working]	5.197721168414351	d
+ComandoOperativo	TotalTime	84.0	d
+ComandoOperativo	Utilisation	0.06187763295731371	-
+ComandoOperativo	Commitment	0.061877632957313744	-
+ComandoOperativo	Availability	1.0	-
+ComandoOperativo	Reliability	1.0	-
+ComandoOperativo	NumberAdded	183.0	-
+ComandoOperativo	NumberProcessed	183.0	-
+ComandoOperativo	UnitsInUseAverage	0.06535714285714286	-
+ComandoOperativo	UnitsInUseStandardDeviation	0.26174226663758676	-
+ComandoOperativo	UnitsInUseMinimum	0.0	-
+ComandoOperativo	UnitsInUseMaximum	3.0	-
+ComandoOperativo	UnitsInUseTimes[0]	78.80227883158565	d
+ComandoOperativo	UnitsInUseTimes[1]	4.924947456458324	d
+ComandoOperativo	UnitsInUseTimes[2]	0.2532685923263937	d
+ComandoOperativo	UnitsInUseTimes[3]	0.01950511962962958	d
+ComandoOperativo	UnitsInUseFractions[0]	0.9381223670426864	-
+ComandoOperativo	UnitsInUseFractions[1]	0.0586303268625991	-
+ComandoOperativo	UnitsInUseFractions[2]	0.0030151022895999247	-
+ComandoOperativo	UnitsInUseFractions[3]	2.3220380511463785E-4	-
+ComandoOperativo	UnitsInUseCumulativeFractions[0]	0.9381223670426864	-
+ComandoOperativo	UnitsInUseCumulativeFractions[1]	0.9967526939052854	-
+ComandoOperativo	UnitsInUseCumulativeFractions[2]	0.9997677961948853	-
+ComandoOperativo	UnitsInUseCumulativeFractions[3]	1.0	-
+
+*** EntitySink ***
+
+Atentados	StateTimes[None]	84.0	d
+Atentados	TotalTime	84.0	d
+Atentados	NumberAdded	183.0	-
+Atentados	NumberProcessed	183.0	-
+
+*** Queue ***
+
+Espera	StateTimes[None]	84.0	d
+Espera	TotalTime	84.0	d
+Espera	NumberAdded	183.0	-
+Espera	NumberProcessed	183.0	-
+Espera	QueueLengthAverage	0.0	-
+Espera	QueueLengthStandardDeviation	0.0	-
+Espera	QueueLengthMinimum	0.0	-
+Espera	QueueLengthMaximum	0.0	-
+Espera	QueueLengthTimes[0]	84.0	d
+Espera	QueueLengthTimes[1]	0.0	d
+Espera	QueueLengthFractions[0]	1.0	-
+Espera	QueueLengthFractions[1]	0.0	-
+Espera	QueueLengthCumulativeFractions[0]	1.0	-
+Espera	QueueLengthCumulativeFractions[1]	1.0	-
+Espera	AverageQueueTime	0.0	d
+Espera	NumberReneged	0.0	-
+
+*** SimEntity ***
+
+Oportunidad	StateTimes[None]	84.0	d
+Oportunidad	TotalTime	84.0	d
+
+*** Resource ***
+
+Material	UnitsSeized	183.0	-
+Material	UnitsReleased	183.0	-
+Material	UnitsInUseAverage	0.06535714285714286	-
+Material	UnitsInUseStandardDeviation	0.26174226663758676	-
+Material	UnitsInUseMinimum	0.0	-
+Material	UnitsInUseMaximum	3.0	-
+Material	UnitsInUseTimes[0]	78.80227883158565	d
+Material	UnitsInUseTimes[1]	4.924947456458324	d
+Material	UnitsInUseTimes[2]	0.2532685923263937	d
+Material	UnitsInUseTimes[3]	0.01950511962962958	d
+Material	UnitsInUseFractions[0]	0.9381223670426864	-
+Material	UnitsInUseFractions[1]	0.0586303268625991	-
+Material	UnitsInUseFractions[2]	0.0030151022895999247	-
+Material	UnitsInUseFractions[3]	2.3220380511463785E-4	-
+Material	UnitsInUseCumulativeFractions[0]	0.9381223670426864	-
+Material	UnitsInUseCumulativeFractions[1]	0.9967526939052854	-
+Material	UnitsInUseCumulativeFractions[2]	0.9997677961948853	-
+Material	UnitsInUseCumulativeFractions[3]	1.0	-
+
