@@ -39,6 +39,7 @@ curso: no se redistribuyen fuera del equipo.
 01_bitacora/     Actividad 1: bitácora estratégica (consigna y APA 7)
 02_informe/      Actividad 2: modelo, resultados e informes
 03_exposicion/   Actividad 3: presentación, guion y demo
+04_futuro/       Proyección 2027-2031 y bitácora de la solución de software
 ```
 
 ### 00_insumos
@@ -90,6 +91,31 @@ Detalle de `jaamsim/`:
 | `conclusiones_explicadas.pdf` `.docx` `.md` | Texto largo de las cuatro conclusiones, con preguntas y respuestas |
 | `guion_exposicion.md` | Qué decir por diapositiva, tiempos, reparto y preguntas |
 | `demo_jaamsim.md` | Demo en vivo de 90 s y plan B |
+
+### 04_futuro — Prospectiva y solución de software
+
+| Archivo | Contenido |
+|---|---|
+| `proyeccion_2031.pdf` `.docx` | Proyección exploratoria 2027–2031: 4 escenarios, 200 réplicas |
+| `bitacora_implementacion.pdf` `.docx` | Plan de 12 semanas del DSS, con criterios de aceptación |
+| `modelo_futuro.py` | Modelo prospectivo (60 meses, calentamiento de 3) |
+| `test_modelo_futuro.py` | 6 pruebas: horizonte, orden de escenarios, reproducibilidad |
+| `resultados_futuro.json` | Métricas por escenario |
+| `fig_trayectorias.png`, `fig_evitados.png` | Figuras del informe |
+
+Advertencia de alcance: las FARC se desmovilizaron en 2016, así que la proyección modela el
+**mecanismo** de un actor armado genérico, no a esa organización. No es un pronóstico.
+
+Resultados: tendencial 211 atentados en 5 años; financiamiento −60 % evita 58 (28 %);
+paquete institucional 63 (30 %); financiamiento −80 % 75 (36 %).
+
+Ejecutar:
+
+```bash
+cd 04_futuro
+python modelo_futuro.py --replicas 200
+python test_modelo_futuro.py
+```
 
 ### 05_propuesta — Solución de software
 
