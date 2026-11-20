@@ -91,6 +91,15 @@ Detalle de `jaamsim/`:
 | `guion_exposicion.md` | Qué decir por diapositiva, tiempos, reparto y preguntas |
 | `demo_jaamsim.md` | Demo en vivo de 90 s y plan B |
 
+### 05_propuesta — Solución de software
+
+| Archivo | Contenido |
+|---|---|
+| `propuesta_solucion_software.md` | DSS web sobre el modelo: arquitectura de tres capas, motor híbrido SD+DES, panel *what-if* |
+
+Es una propuesta de producto, no un entregable del curso: describe cómo llevar el prototipo a
+una plataforma con API, réplicas múltiples y panel para decisores.
+
 ## Presentación en HTML
 
 Abrir `03_exposicion/presentacion_act3.html` en cualquier navegador. No necesita internet:
