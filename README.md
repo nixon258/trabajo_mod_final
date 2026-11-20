@@ -126,6 +126,26 @@ python test_modelo_futuro.py
 Es una propuesta de producto, no un entregable del curso: describe cómo llevar el prototipo a
 una plataforma con API, réplicas múltiples y panel para decisores.
 
+### 06_software — MVP del sistema de apoyo a decisiones
+
+| Archivo | Contenido |
+|---|---|
+| `app/sim.py` | Envuelve los dos modelos y calcula métricas con intervalo de confianza |
+| `app/main.py` | API FastAPI: salud, modelos y simulación |
+| `app/static/index.html` | Panel con dos controles, gráfico, tabla y exportación CSV |
+| `tests/test_api.py` | 8 pruebas de aceptación |
+| `docs/captura_panel.png` | Captura del panel funcionando |
+
+```bash
+cd 06_software
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+./run.sh          # http://127.0.0.1:8000
+```
+
+Verificado: 209,6 atentados con 30 réplicas en el modelo futuro (base 211) y 289,9 en el
+calibrado (base 290,0). Latencia por escenario: 31–208 ms.
+
 ## Presentación en HTML
 
 Abrir `03_exposicion/presentacion_act3.html` en cualquier navegador. No necesita internet:
