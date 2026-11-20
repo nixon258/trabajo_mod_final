@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DSS · Violencia organizada · Modelación 902</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:#1F3864; --blue:#2E75B6; --light:#EEF3FA; --line:#C9D8EE;
+    --red:#C00000; --ink:#262626; --grey:#5B6472; --bg:#F5F7FB;
+  }
+  body { font-family: Arial, "Helvetica Neue", Helvetica, sans-serif; color: var(--ink);
+    background: var(--bg); line-height: 1.45; }
+  header { background: var(--navy); color: #fff; padding: 18px 28px; display: flex;
+    justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  header h1 { font-size: 20px; letter-spacing: -.2px; }
+  header p { color: #BFCFE6; font-size: 12px; }
+  .badge { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25);
+    padding: 5px 10px; border-radius: 20px; font-size: 11px; }
+  main { display: grid; grid-template-columns: 340px 1fr; gap: 20px; padding: 20px 28px 40px;
+    max-width: 1240px; margin: 0 auto; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 20px; }
+  .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--blue); margin-bottom: 12px; }
+
+  label { display: block; font-size: 12.5px; color: var(--grey); margin: 14px 0 6px; }
+  label b { color: var(--ink); float: right; font-size: 13px; }
+  input[type=range] { width: 100%; accent-color: var(--blue); }
+  select, button { font-family: inherit; font-size: 13.5px; }
+  select { width: 100%; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 6px; background: #fff; }
+  button { width: 100%; margin-top: 18px; padding: 11px; border: 0; border-radius: 7px;
+    background: var(--navy); color: #fff; font-weight: bold; cursor: pointer; }
+  button:hover { background: #16294a; }
+  button:disabled { background: #9AA8BD; cursor: wait; }
+  .hint { font-size: 11.5px; color: var(--grey); margin-top: 12px; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--light); border: 1px solid var(--line); border-radius: 9px;
+    padding: 12px 14px; }
+  .card b { display: block; font-size: 26px; color: var(--navy); line-height: 1.1; }
+  .card span { font-size: 11.5px; color: var(--grey); }
+  .card.good b { color: #0F7B4F; }
+
+  .chart { margin-top: 16px; background: #fff; border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px; }
+  .chart svg { width: 100%; height: auto; display: block; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #E6ECF5; }
+  th { color: var(--grey); font-weight: normal; font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: .6px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .actions { display: flex; gap: 10px; margin-top: 16px; }
+  .actions button { margin: 0; width: auto; padding: 8px 14px; background: #fff;
+    color: var(--navy); border: 1px solid var(--line); font-weight: normal; }
+  .actions button:hover { background: var(--light); }
+
+  .warn { margin-top: 16px; border-left: 4px solid var(--red); background: #FDF3F3;
+    padding: 12px 14px; border-radius: 6px; font-size: 12.5px; }
+  .warn b { color: var(--red); }
+  .meta { font-size: 11.5px; color: var(--grey); margin-top: 10px; }
+  .error { color: var(--red); font-size: 13px; margin-top: 12px; }
+  footer { text-align: center; font-size: 11px; color: var(--grey); padding: 0 0 24px; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Sistema de apoyo a decisiones · Violencia organizada</h1>
+    <p>Modelación 902 · Universidad de Cundinamarca · modelo de simulación calibrado</p>
+  </div>
+  <span class="badge" id="estado">conectando…</span>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>Escenario</h2>
+
+    <label for="modelo">Modelo</label>
+    <select id="modelo">
+      <option value="futuro">Proyección 2027–2031 (60 meses)</option>
+      <option value="calibrado">Calibrado 1998–2004 (84 meses)</option>
+    </select>
+
+    <label for="recaudo">Recaudo potencial <b><span id="vRecaudo">100</span></b></label>
+    <input type="range" id="recaudo" min="0" max="100" step="5" value="100">
+    <p class="hint">100 = línea base. 40 equivale a cortar 60 % del financiamiento.</p>
+
+    <label for="retardo">Retardo de la respuesta estatal <b><span id="vRetardo">4</span> meses</b></label>
+    <input type="range" id="retardo" min="0.5" max="6" step="0.5" value="4">
+    <p class="hint">4 meses es el valor calibrado. 2 representa una respuesta más rápida.</p>
+
+    <label for="replicas">Réplicas</label>
+    <select id="replicas">
+      <option value="10">10 (rápido)</option>
+      <option value="30" selected>30 (recomendado)</option>
+      <option value="100">100 (más preciso)</option>
+    </select>
+
+    <button id="btn">Simular escenario</button>
+    <div id="error" class="error"></div>
+
+    <div class="warn">
+      <b>Qué no es esto.</b> No es un pronóstico. El modelo compara escenarios bajo una
+      estructura calibrada con datos de 1998–2004; las FARC se desmovilizaron en 2016.
+      Los resultados dependen de los supuestos, visibles en la tabla superior.
+    </div>
+  </section>
+
+  <section>
+    <div class="cards">
+      <div class="card"><b id="cTotal">—</b><span>atentados en el horizonte</span></div>
+      <div class="card good"><b id="cEvitados">—</b><span>evitados frente a la línea base</span></div>
+      <div class="card"><b id="cMedia">—</b><span>atentados por mes</span></div>
+      <div class="card"><b id="cSin">—</b><span>meses sin atentados</span></div>
+      <div class="card"><b id="cVar">—</b><span>varianza mensual</span></div>
+      <div class="card"><b id="cIC">—</b><span>intervalo del total (95 %)</span></div>
+    </div>
+
+    <div class="chart">
+      <svg id="grafico" viewBox="0 0 760 280" role="img"
+           aria-label="Atentados por mes del escenario simulado"></svg>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Indicador</th><th class="num">Valor</th><th>Lectura</th></tr>
+      </thead>
+      <tbody id="tabla">
+        <tr><td colspan="3" style="color:#5B6472">Ejecuta un escenario para ver los resultados.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="actions">
+      <button id="csv">Descargar CSV</button>
+      <button id="imprimir">Imprimir / PDF</button>
+    </div>
+    <p class="meta" id="meta"></p>
+  </section>
+</main>
+
+<footer>Modelo de sistemas + JaamSim · parámetros y semilla visibles en cada corrida</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+let ultimo = null;
+
+async function cargarModelos() {
+  try {
+    const r = await fetch('/api/modelos');
+    const d = await r.json();
+    $('estado').textContent = 'modelo listo';
+    actualizarBase(d[$('modelo').value]);
+  } catch (e) {
+    $('estado').textContent = 'sin conexión';
+    $('error').textContent = 'No se pudo conectar con la API.';
+  }
+}
+
+function actualizarBase(meta) {
+  if (!meta) return;
+  $('recaudo').value = meta.recaudo_base;
+  $('retardo').value = meta.retardo_base;
+  $('vRecaudo').textContent = meta.recaudo_base;
+  $('vRetardo').textContent = meta.retardo_base;
+}
+
+$('recaudo').addEventListener('input', e => $('vRecaudo').textContent = e.target.value);
+$('retardo').addEventListener('input', e => $('vRetardo').textContent = e.target.value);
+$('modelo').addEventListener('change', async () => {
+  const d = await (await fetch('/api/modelos')).json();
+  actualizarBase(d[$('modelo').value]);
+});
+
+async function simular() {
+  const btn = $('btn');
+  btn.disabled = true; btn.textContent = 'Simulando…'; $('error').textContent = '';
+  const t0 = performance.now();
+  try {
+    const cuerpo = {
+      modelo: $('modelo').value,
+      recaudo: Number($('recaudo').value),
+      retardo: Number($('retardo').value),
+      replicas: Number($('replicas').value)
+    };
+    const r = await fetch('/api/simular', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(cuerpo)
+    });
+    if (!r.ok) {
+      const d = await r.json();
+      throw new Error(d.detail || 'Error en la simulación');
+    }
+    const d = await r.json();
+    d.ms = Math.round(performance.now() - t0);
+    ultimo = d;
+    pintar(d);
+  } catch (e) {
+    $('error').textContent = e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simular escenario';
+  }
+}
+
+function fmt(n, dec = 1) {
+  return Number(n).toLocaleString('es-CO', {minimumFractionDigits: dec,
+    maximumFractionDigits: dec});
+}
+
+function pintar(d) {
+  $('cTotal').textContent = fmt(d.total, 0);
+  $('cEvitados').textContent = Math.abs(d.evitados) < 0.5
+    ? '—'
+    : (d.evitados > 0 ? '−' : '+') + fmt(Math.abs(d.evitados), 0) +
+      ' (' + fmt(Math.abs(d.evitados_pct), 0) + ' %)';
+  $('cMedia').textContent = fmt(d.media_mensual, 2);
+  $('cSin').textContent = fmt(d.meses_sin_atentados, 1);
+  $('cVar').textContent = fmt(d.varianza_mensual, 1);
+  $('cIC').textContent = '± ' + fmt(d.ic95, 0);
+
+  $('tabla').innerHTML = `
+    <tr><td>Modelo</td><td class="num">—</td><td>${d.etiqueta} · ${d.horizonte}</td></tr>
+    <tr><td>Atentados totales</td><td class="num">${fmt(d.total, 1)}</td>
+        <td>promedio de ${d.parametros.replicas} réplicas</td></tr>
+    <tr><td>Evitados</td><td class="num">${fmt(d.evitados, 1)}</td>
+        <td>${fmt(d.evitados_pct, 1)} % frente a la base del mismo modelo</td></tr>
+    <tr><td>Meses con más de 10</td><td class="num">${fmt(d.p_mas_10, 1)} %</td>
+        <td>concentración de la violencia en picos</td></tr>
+    <tr><td>Recaudo / retardo</td><td class="num">${d.parametros.recaudo} · ${d.parametros.retardo}</td>
+        <td>parámetros del escenario</td></tr>
+    <tr><td>Semilla inicial</td><td class="num">${d.parametros.semilla_inicial}</td>
+        <td>reproducible: misma semilla, mismo resultado</td></tr>`;
+
+  $('meta').textContent = `Corrida en ${d.ms} ms · ${d.meses} meses · ` +
+    `${d.parametros.replicas} réplicas · semilla ${d.parametros.semilla_inicial}`;
+  dibujar(d.trayectoria);
+}
+
+function dibujar(serie) {
+  const svg = $('grafico');
+  const W = 760, H = 280, L = 46, R = 14, T = 16, B = 34;
+  const n = serie.length;
+  const max = Math.max(1, Math.ceil(Math.max(...serie) / 2) * 2);
+  const x = i => L + i * (W - L - R) / Math.max(1, n - 1);
+  const y = v => H - B - v * (H - T - B) / max;
+  const rect = (x1, y1, w, h, f) =>
+    `<rect x="${x1}" y="${y1}" width="${w}" height="${h}" fill="${f}"/>`;
+  let s = '';
+  for (let g = 0; g <= max; g += 2) {
+    s += `<line x1="${L}" y1="${y(g)}" x2="${W - R}" y2="${y(g)}"
+          stroke="#E7EDF6" stroke-width="1"/>`;
+    s += `<text x="${L - 8}" y="${y(g) + 4}" text-anchor="end" font-size="10"
+          fill="#7A8699">${g}</text>`;
+  }
+  let d = '';
+  serie.forEach((v, i) => { d += (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); });
+  s += `<path d="${d}" fill="none" stroke="#1F3864" stroke-width="2"
+        stroke-linejoin="round"/>`;
+  s += `<path d="${d}L${x(n - 1)},${H - B}L${L},${H - B}Z" fill="rgba(31,56,100,.08)"/>`;
+  const paso = Math.max(1, Math.round(n / 8));
+  for (let i = 0; i < n; i += paso) {
+    s += `<text x="${x(i)}" y="${H - 12}" text-anchor="middle" font-size="10"
+          fill="#7A8699">${i + 1}</text>`;
+  }
+  s += `<line x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}" stroke="#C9D8EE"/>`;
+  s += `<text x="${L}" y="${H - 1}" font-size="10" fill="#7A8699">mes</text>`;
+  svg.innerHTML = s;
+}
+
+$('btn').addEventListener('click', simular);
+$('imprimir').addEventListener('click', () => window.print());
+$('csv').addEventListener('click', () => {
+  if (!ultimo) return;
+  const filas = ['mes,atentados'];
+  ultimo.trayectoria.forEach((v, i) => filas.push(`${i + 1},${v}`));
+  const blob = new Blob([filas.join('\n')], {type: 'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `escenario_${ultimo.modelo}_${ultimo.parametros.recaudo}.csv`;
+  a.click();
+});
+
+function aplicarURL() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('modelo')) $('modelo').value = q.get('modelo');
+  if (q.get('rec')) $('recaudo').value = q.get('rec');
+  if (q.get('tau')) $('retardo').value = q.get('tau');
+  if (q.get('rep')) $('replicas').value = q.get('rep');
+  $('vRecaudo').textContent = $('recaudo').value;
+  $('vRetardo').textContent = $('retardo').value;
+}
+
+cargarModelos().then(() => { aplicarURL(); return simular(); });
+</script>
+</body>
+</html>
