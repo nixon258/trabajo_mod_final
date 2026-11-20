@@ -10,3 +10,6 @@ __pycache__/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Base de datos local
+06_software/dss.db*

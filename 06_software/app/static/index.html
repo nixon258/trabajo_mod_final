@@ -140,9 +140,37 @@
 
     <div class="actions">
       <button id="csv">Descargar CSV</button>
-      <button id="imprimir">Imprimir / PDF</button>
+      <button id="pdf">Reporte PDF</button>
+      <button id="comparar">Comparar 3 escenarios</button>
+      <button id="imprimir">Imprimir</button>
     </div>
     <p class="meta" id="meta"></p>
+
+    <div class="chart" id="cajaComparacion" style="display:none">
+      <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:1px;
+        color:#2E75B6;margin-bottom:8px">Comparación de escenarios</h2>
+      <svg id="graficoComp" viewBox="0 0 760 280" role="img"
+           aria-label="Comparación de escenarios"></svg>
+      <table>
+        <thead><tr><th>Escenario</th><th class="num">Total</th><th class="num">Evitados</th>
+          <th class="num">Meses en calma</th><th class="num">Varianza</th></tr></thead>
+        <tbody id="tablaComp"></tbody>
+      </table>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>Historial de corridas</h2>
+      <table>
+        <thead><tr><th>#</th><th>Modelo</th><th class="num">Recaudo · retardo</th>
+          <th class="num">Total</th><th class="num">Evitados</th><th></th></tr></thead>
+        <tbody id="historial"><tr><td colspan="6" style="color:#5B6472">Sin corridas.</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>Límites del modelo</h2>
+      <ul id="limites" style="list-style:none;font-size:12.5px;color:#5B6472"></ul>
+    </div>
   </section>
 </main>
 
@@ -202,6 +230,7 @@ async function simular() {
     d.ms = Math.round(performance.now() - t0);
     ultimo = d;
     pintar(d);
+    cargarHistorial();
   } catch (e) {
     $('error').textContent = e.message;
   } finally {
@@ -275,6 +304,84 @@ function dibujar(serie) {
 }
 
 $('btn').addEventListener('click', simular);
+
+async function cargarHistorial() {
+  try {
+    const d = await (await fetch('/api/historial?limite=6')).json();
+    const tb = $('historial');
+    if (!d.corridas.length) { tb.innerHTML =
+      '<tr><td colspan="6" style="color:#5B6472">Sin corridas.</td></tr>'; return; }
+    tb.innerHTML = d.corridas.map(c => `
+      <tr><td>${c.id}</td><td>${c.modelo}</td>
+      <td class="num">${c.recaudo} · ${c.retardo}</td>
+      <td class="num">${fmt(c.total, 0)}</td>
+      <td class="num">${fmt(c.evitados_pct, 1)} %</td>
+      <td><a href="/api/historial/${c.id}/pdf" style="color:#2E75B6">PDF</a></td></tr>`).join('');
+  } catch (e) { /* silencioso: el historial no bloquea la simulación */ }
+}
+
+async function comparar() {
+  const btn = $('comparar');
+  btn.disabled = true; btn.textContent = 'Comparando…';
+  try {
+    const cuerpo = {modelo: $('modelo').value, replicas: Number($('replicas').value),
+      escenarios: [
+        {nombre: 'Línea base', recaudo: 100, retardo: 4},
+        {nombre: 'Financiamiento −60 %', recaudo: 40, retardo: 4},
+        {nombre: 'Paquete (fin. −60 %, 2 meses)', recaudo: 40, retardo: 2}
+      ]};
+    const r = await fetch('/api/comparar', {method: 'POST',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify(cuerpo)});
+    if (!r.ok) throw new Error((await r.json()).detail || 'Error al comparar');
+    const d = await r.json();
+    $('cajaComparacion').style.display = 'block';
+    $('tablaComp').innerHTML = d.escenarios.map(e => `
+      <tr><td>${e.nombre}</td><td class="num">${fmt(e.total, 0)}</td>
+      <td class="num">${fmt(e.evitados_pct, 1)} %</td>
+      <td class="num">${fmt(e.meses_sin_atentados, 1)}</td>
+      <td class="num">${fmt(e.varianza_mensual, 1)}</td></tr>`).join('');
+    dibujarVarias(d.escenarios);
+    cargarHistorial();
+  } catch (e) { $('error').textContent = e.message; }
+  finally { btn.disabled = false; btn.textContent = 'Comparar 3 escenarios'; }
+}
+
+function dibujarVarias(escenarios) {
+  const svg = $('graficoComp');
+  const W = 760, H = 280, L = 46, R = 14, T = 16, B = 34;
+  const n = escenarios[0].trayectoria.length;
+  const max = Math.max(2, Math.ceil(Math.max(...escenarios.flatMap(e => e.trayectoria)) / 2) * 2);
+  const x = i => L + i * (W - L - R) / Math.max(1, n - 1);
+  const y = v => H - B - v * (H - T - B) / max;
+  let s = '';
+  for (let g = 0; g <= max; g += 2) {
+    s += `<line x1="${L}" y1="${y(g)}" x2="${W - R}" y2="${y(g)}" stroke="#E7EDF6"/>`;
+    s += `<text x="${L - 8}" y="${y(g) + 4}" text-anchor="end" font-size="10"
+          fill="#7A8699">${g}</text>`;
+  }
+  const colores = ['#9AA8BD', '#2E75B6', '#C00000'];
+  escenarios.forEach((e, k) => {
+    let d = '';
+    e.trayectoria.forEach((v, i) => { d += (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); });
+    s += `<path d="${d}" fill="none" stroke="${colores[k % 3]}" stroke-width="1.8"/>`;
+  });
+  s += `<line x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}" stroke="#C9D8EE"/>`;
+  svg.innerHTML = s;
+}
+
+async function cargarLimites() {
+  try {
+    const d = await (await fetch('/api/limites')).json();
+    $('limites').innerHTML = Object.entries(d).map(([k, v]) =>
+      `<li style="margin-bottom:6px"><b style="color:#262626">${k.replace(/_/g, ' ')}:</b> ${v}</li>`).join('');
+  } catch (e) { /* opcional */ }
+}
+
+$('comparar').addEventListener('click', comparar);
+$('pdf').addEventListener('click', () => {
+  if (ultimo && ultimo.id) window.open(`/api/historial/${ultimo.id}/pdf`, '_blank');
+  else $('error').textContent = 'Primero simula un escenario (sin modo previo guardado).';
+});
 $('imprimir').addEventListener('click', () => window.print());
 $('csv').addEventListener('click', () => {
   if (!ultimo) return;
@@ -297,7 +404,7 @@ function aplicarURL() {
   $('vRetardo').textContent = $('retardo').value;
 }
 
-cargarModelos().then(() => { aplicarURL(); return simular(); });
+cargarModelos().then(() => { aplicarURL(); cargarLimites(); return simular(); });
 </script>
 </body>
 </html>

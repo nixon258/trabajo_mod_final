@@ -1,7 +1,10 @@
 # DSS — Sistema de apoyo a decisiones
 
 Capa de software sobre el modelo de simulación: una API que ejecuta escenarios y un panel web
-que los compara. **Incremento 1** de la bitácora de implementación (`04_futuro`).
+que los compara. Cubre el **incremento 1** y parte del 2 de la bitácora (`04_futuro`):
+persistencia, comparación múltiple, reporte PDF y validación de datos.
+
+Riesgos y mitigaciones: [`RIESGOS.md`](RIESGOS.md).
 
 ![Panel](docs/captura_panel.png)
 
@@ -45,9 +48,18 @@ Parámetros por URL: `?modelo=futuro&rec=40&tau=2&rep=30`.
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| GET | `/api/salud` | Estado y modelos disponibles |
+| GET | `/api/salud` | Estado, versión y concurrencia |
 | GET | `/api/modelos` | Metadatos y valores base de cada modelo |
-| POST | `/api/simular` | Ejecuta un escenario |
+| GET | `/api/limites` | Límites y supuestos del modelo |
+| POST | `/api/simular` | Ejecuta un escenario y lo guarda |
+| POST | `/api/comparar` | Ejecuta 2–5 escenarios y los guarda |
+| GET | `/api/historial` | Últimas corridas |
+| GET | `/api/historial/{id}` | Detalle de una corrida |
+| GET | `/api/historial/{id}/pdf` | Reporte PDF de una página |
+| POST | `/api/datos/validar` | Valida un CSV de serie mensual antes de recalibrar |
+
+Clave opcional: si se define `DSS_API_KEY`, todos los endpoints de cálculo e historial exigen
+el header `X-API-Key`.
 
 Ejemplo:
 
@@ -68,11 +80,9 @@ Respuesta (resumida):
 ## Pruebas
 
 ```bash
-python -m pytest tests -q
+python -m pytest tests -q     # 16 pruebas
+./scripts/smoke.sh            # humo: API, simulación, PDF y límites
 ```
-
-Ocho pruebas de aceptación: salud, metadatos, ambos modelos, efecto del recaudo, validación de
-rangos, reproducibilidad y servicio del panel.
 
 ## Criterios de aceptación cumplidos
 
@@ -82,16 +92,31 @@ rangos, reproducibilidad y servicio del panel.
 | Reproducir la base (calibrado) | 290,0 atentados | 289,9 con 30 réplicas |
 | Latencia por escenario | < 60 s | 31–208 ms |
 | Error frente al modelo Python | < 1 % en la media | 0,7 % |
-| Trazabilidad | semilla y parámetros visibles | sí, en la respuesta y en el panel |
+| Trazabilidad | semilla y parámetros visibles | sí, en respuesta, panel y PDF |
+| Comparación múltiple | 2–5 escenarios por petición | 3 escenarios en 0,6 s |
+| Persistencia | historial recuperable | SQLite en WAL, probado |
 
-## Límites
+## Despliegue con Docker
+
+```bash
+docker compose -f 06_software/docker-compose.yml up --build
+```
+
+La imagen usa `python:3.12-slim`, corre como usuario sin privilegios, guarda la base en el
+volumen `dss_datos` y expone un `HEALTHCHECK` contra `/api/salud`.
+
+No verificado: el daemon de Docker no estaba disponible en la máquina de desarrollo, así que la
+imagen no se construyó. El humo se validó sin contenedor.
+
+## Límites declarados (también en `/api/limites`)
 
 - No es un pronóstico: compara escenarios bajo una estructura calibrada.
-- Sin autenticación ni base de datos: el incremento 1 no persiste corridas.
-- Una petición a la vez por proceso; la cola de tareas es del incremento 2.
-- La línea base se cachea por modelo y número de réplicas.
+- Sin validación fuera de muestra: el ETL existe, la recalibración no se hizo.
+- Autenticación por clave compartida, sin roles.
+- Concurrencia limitada por semáforo en un proceso; para más carga, varios contenedores.
+- La línea base se cachea por modelo y número de réplicas, con semillas fijas.
 
-## Siguiente incremento
+## Siguiente fase
 
-Persistencia en SQLite, historial de corridas, comparación de varios escenarios en la misma
-gráfica y exportación PDF generada por el backend (semanas 5–7 de la bitácora).
+ETL contra fuentes oficiales (hoy valida CSV), cola de tareas distribuida, usuarios y roles,
+validación con una serie posterior a 2004 (semanas 8–12 de la bitácora).

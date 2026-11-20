@@ -133,7 +133,12 @@ una plataforma con API, réplicas múltiples y panel para decisores.
 | `app/sim.py` | Envuelve los dos modelos y calcula métricas con intervalo de confianza |
 | `app/main.py` | API FastAPI: salud, modelos y simulación |
 | `app/static/index.html` | Panel con dos controles, gráfico, tabla y exportación CSV |
-| `tests/test_api.py` | 8 pruebas de aceptación |
+| `tests/` | 16 pruebas de aceptación |
+| `app/db.py` | Persistencia SQLite del historial |
+| `app/report.py` | Reporte PDF de una corrida |
+| `app/etl.py` | Validación de series para recalibrar |
+| `Dockerfile`, `docker-compose.yml` | Despliegue en contenedor |
+| `RIESGOS.md` | Matriz de riesgos con mitigación y evidencia |
 | `docs/captura_panel.png` | Captura del panel funcionando |
 
 ```bash
@@ -144,7 +149,8 @@ pip install -r requirements.txt
 ```
 
 Verificado: 209,6 atentados con 30 réplicas en el modelo futuro (base 211) y 289,9 en el
-calibrado (base 290,0). Latencia por escenario: 31–208 ms.
+calibrado (base 290,0). Latencia por escenario: 31–208 ms. Historial, comparación de tres
+escenarios, PDF y validación de CSV probados con 16 pruebas y un guion de humo.
 
 ## Presentación en HTML
 

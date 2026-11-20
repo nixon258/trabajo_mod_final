@@ -1,0 +1,17 @@
+services:
+  dss:
+    build:
+      context: ..
+      dockerfile: 06_software/Dockerfile
+    image: dss-modelacion:0.2.0
+    ports:
+      - "8000:8000"
+    environment:
+      DSS_MAX_CONCURRENT: "2"
+      # DSS_API_KEY: "cambiar-en-produccion"
+    volumes:
+      - dss_datos:/datos
+    restart: unless-stopped
+
+volumes:
+  dss_datos:
