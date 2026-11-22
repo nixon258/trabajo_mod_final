@@ -152,6 +152,13 @@ Verificado: 209,6 atentados con 30 réplicas en el modelo futuro (base 211) y 28
 calibrado (base 290,0). Latencia por escenario: 31–208 ms. Historial, comparación de tres
 escenarios, PDF y validación de CSV probados con 16 pruebas y un guion de humo.
 
+### 07_video — Video de sustentación
+
+| Archivo | Contenido |
+|---|---|
+| `dss_demo_7min.mp4` | 7:06 · 1920×1080 · sin voz, texto quemado · incluye JaamSim |
+| `guion_video.md` | Estructura por bloques, tiempos y cómo regenerarlo |
+
 ## Presentación en HTML
 
 Abrir `03_exposicion/presentacion_act3.html` en cualquier navegador. No necesita internet:
